@@ -1,0 +1,6 @@
+id=strace
+name=Strace
+version=v1
+versionCode=1
+author=Denis Efremov (@evdenis)
+description=Strace v5.9 Arm64 only.
