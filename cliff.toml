@@ -1,0 +1,49 @@
+# git-cliff configuration
+# https://git-cliff.org/docs/configuration
+
+[changelog]
+header = """
+# Changelog\n
+"""
+body = """
+{% if version %}\
+    ## {{ version }}
+{% for group, commits in commits | group_by(attribute="group") %}
+    ### {{ group | striptags | trim | upper_first }}
+    {% for commit in commits %}
+        - {{ commit.message | upper_first }}\
+    {% endfor %}
+{% endfor %}\n
+{% endif %}\
+"""
+footer = """
+## v1
+- Initial release: strace v5.9 (ARM64, GCC10, LTO, stripped)
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+tag_pattern = "^v[0-9]"
+skip_tags = "^v1$"
+commit_preprocessors = [
+    # Keep only the first line of multi-line commit messages
+    { pattern = "\n[\\s\\S]*", replace = "" },
+]
+commit_parsers = [
+    # Historical commits (pre-conventional)
+    { message = "^init$", skip = true },
+    { message = "^Strace", skip = true },
+
+    { message = "^feat", group = "<!-- 0 -->Features" },
+    { message = "^fix", group = "<!-- 1 -->Bug Fixes" },
+    { message = "^perf", group = "<!-- 2 -->Performance" },
+    { message = "^ci", group = "<!-- 3 -->CI/CD" },
+    { message = "^build", group = "<!-- 4 -->Build" },
+    { message = "^docs", group = "<!-- 5 -->Documentation" },
+    { message = "^refactor", group = "<!-- 6 -->Refactoring" },
+    { message = "^style", group = "<!-- 7 -->Styling" },
+    { message = "^test", group = "<!-- 8 -->Testing" },
+    { message = "^chore", group = "<!-- 9 -->Chores" },
+]

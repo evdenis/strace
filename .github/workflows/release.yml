@@ -15,6 +15,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Version consistency check
         run: |
@@ -23,10 +25,8 @@ jobs:
             echo "ERROR: Tag ($TAG) does not match module.prop version ($PROP_VER)"
             exit 1
           fi
-          if ! grep -q "^## ${TAG}$" CHANGELOG.md; then
-            echo "ERROR: CHANGELOG.md missing section for ${TAG}"
-            exit 1
-          fi
+          ID=$(grep '^id=' module.prop | cut -d'=' -f2)
+          echo "ID=${ID}" >> "$GITHUB_ENV"
           echo "Version consistent: $TAG"
 
       - name: ShellCheck
@@ -54,25 +54,23 @@ jobs:
           echo "$LISTING" | grep -qE '\.git/|Makefile|README\.md' \
             && { echo "::error::Dev files found in zip"; exit 1; } || true
 
-      - name: Extract release notes from CHANGELOG.md
-        run: |
-          awk -v tag="## ${TAG}" '
-            $0 == tag { found=1; next }
-            found && /^## / { exit }
-            found { print }
-          ' CHANGELOG.md > /tmp/release-notes.txt
+      - name: Generate release notes
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --latest --strip all
+        env:
+          OUTPUT: /tmp/release-notes.md
 
       - name: Generate update.json
         run: |
-          VERSION=$(grep '^version=' module.prop | cut -d'=' -f2)
           VERSION_CODE=$(grep '^versionCode=' module.prop | cut -d'=' -f2)
-          ID=$(grep '^id=' module.prop | cut -d'=' -f2)
           REPO="${GITHUB_REPOSITORY}"
           cat > update.json <<EOF
 {
   "versionCode": ${VERSION_CODE},
-  "version": "${VERSION}",
-  "zipUrl": "https://github.com/${REPO}/releases/download/${TAG}/${ID}-${VERSION}.zip",
+  "version": "${TAG}",
+  "zipUrl": "https://github.com/${REPO}/releases/download/${TAG}/${ID}-${TAG}.zip",
   "changelog": "https://github.com/${REPO}/releases/tag/${TAG}"
 }
 EOF
@@ -81,9 +79,8 @@ EOF
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ID=$(grep '^id=' module.prop | cut -d'=' -f2)
           gh release create "$TAG" \
             --title "$TAG" \
-            --notes-file /tmp/release-notes.txt \
+            --notes-file /tmp/release-notes.md \
             ${ID}-v*.zip \
             update.json

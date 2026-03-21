@@ -5,10 +5,12 @@
 *.json text eol=lf
 *.xml text eol=lf
 *.yml text eol=lf
+*.toml text eol=lf
 META-INF/** text eol=lf
 
 .gitattributes export-ignore
 .gitignore export-ignore
 CHECKLIST.md export-ignore
 CLAUDE.md export-ignore
+cliff.toml export-ignore
 hooks/ export-ignore
