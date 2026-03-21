@@ -2,8 +2,13 @@
 *.sh text eol=lf
 *.prop text eol=lf
 *.md text eol=lf
+*.json text eol=lf
 *.xml text eol=lf
+*.yml text eol=lf
 META-INF/** text eol=lf
 
 .gitattributes export-ignore
 .gitignore export-ignore
+CHECKLIST.md export-ignore
+CLAUDE.md export-ignore
+hooks/ export-ignore

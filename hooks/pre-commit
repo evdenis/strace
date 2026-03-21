@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if command -v shellcheck >/dev/null 2>&1; then
+    if ls *.sh 1>/dev/null 2>&1; then
+        echo "Running ShellCheck..."
+        if ! shellcheck -s sh *.sh; then
+            echo "ShellCheck failed. Fix issues before committing."
+            exit 1
+        fi
+    fi
+else
+    echo "Warning: shellcheck not installed, skipping lint"
+fi
+
+echo "Pre-commit checks passed."
