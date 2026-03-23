@@ -1,12 +1,20 @@
 #!/bin/sh
 
 if command -v shellcheck >/dev/null 2>&1; then
-    if ls *.sh 1>/dev/null 2>&1; then
-        echo "Running ShellCheck..."
-        if ! shellcheck -s sh *.sh; then
-            echo "ShellCheck failed. Fix issues before committing."
-            exit 1
-        fi
+    STATUS=0
+    for f in *.sh; do
+        [ -f "$f" ] || continue
+        echo "Running ShellCheck on $f..."
+        shellcheck "$f" || STATUS=1
+    done
+    for f in tests/*.sh; do
+        [ -f "$f" ] || continue
+        echo "Running ShellCheck on $f..."
+        shellcheck "$f" || STATUS=1
+    done
+    if [ "$STATUS" -ne 0 ]; then
+        echo "ShellCheck failed. Fix issues before committing."
+        exit 1
     fi
 else
     echo "Warning: shellcheck not installed, skipping lint"

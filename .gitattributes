@@ -10,8 +10,12 @@ META-INF/** text eol=lf
 
 .gitattributes export-ignore
 .gitignore export-ignore
+.dockerignore export-ignore
 CHECKLIST.md export-ignore
 CLAUDE.md export-ignore
+Dockerfile export-ignore
+build-strace.sh export-ignore
 cliff.toml export-ignore
 hooks/ export-ignore
+tests/ export-ignore
 .claude/ export-ignore

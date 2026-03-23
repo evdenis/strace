@@ -1,0 +1,14 @@
+.git/
+.github/
+.claude/
+*.zip
+out/
+tests/
+hooks/
+system/
+LICENSE
+CLAUDE.md
+CHECKLIST.md
+README.md
+CHANGELOG.md
+cliff.toml
