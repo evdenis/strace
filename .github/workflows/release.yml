@@ -66,14 +66,8 @@ jobs:
         run: |
           VERSION_CODE=$(grep '^versionCode=' module.prop | cut -d'=' -f2)
           REPO="${GITHUB_REPOSITORY}"
-          cat > update.json <<EOF
-{
-  "versionCode": ${VERSION_CODE},
-  "version": "${TAG}",
-  "zipUrl": "https://github.com/${REPO}/releases/download/${TAG}/${ID}-${TAG}.zip",
-  "changelog": "https://github.com/${REPO}/releases/tag/${TAG}"
-}
-EOF
+          printf '{\n  "versionCode": %s,\n  "version": "%s",\n  "zipUrl": "https://github.com/%s/releases/download/%s/%s-%s.zip",\n  "changelog": "https://github.com/%s/releases/tag/%s"\n}\n' \
+            "${VERSION_CODE}" "${TAG}" "${REPO}" "${TAG}" "${ID}" "${TAG}" "${REPO}" "${TAG}" > update.json
 
       - name: Create GitHub Release
         env:
