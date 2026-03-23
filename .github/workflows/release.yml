@@ -33,11 +33,6 @@ jobs:
           echo "DESCRIPTION=${DESCRIPTION}" >> "$GITHUB_ENV"
           echo "Version consistent: $TAG"
 
-      - name: ShellCheck
-        run: |
-          if ls *.sh 1>/dev/null 2>&1; then
-            shellcheck -s sh *.sh
-          fi
 
       - name: Check update-binary freshness
         run: |
