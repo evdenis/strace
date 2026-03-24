@@ -3,9 +3,11 @@
 .claude/
 *.zip
 out/
+out-*/
 tests/
 hooks/
 system/
+strace-bin/
 LICENSE
 CLAUDE.md
 CHECKLIST.md

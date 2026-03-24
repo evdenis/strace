@@ -2,12 +2,12 @@
 #
 # Binary sanity tests for the strace binary.
 # Usage: ./tests/test-strace-binary.sh [path/to/strace] [arch]
-#   arch: arm64 (default)
+#   arch: arm64 (default), arm, x86_64, x86
 #
 
 set -euo pipefail
 
-BINARY="${1:-system/bin/strace}"
+BINARY="${1:-strace-bin/arm64/strace}"
 ARCH="${2:-arm64}"
 
 if [[ ! -f "$BINARY" ]]; then
@@ -21,8 +21,23 @@ case "$ARCH" in
         MACHINE_PATTERN="Machine:.*AArch64"
         QEMU_BIN="qemu-aarch64-static"
         ;;
+    arm)
+        ELF_PATTERN="ELF 32-bit LSB executable, ARM, EABI5"
+        MACHINE_PATTERN="Machine:.*ARM"
+        QEMU_BIN="qemu-arm-static"
+        ;;
+    x86_64)
+        ELF_PATTERN="ELF 64-bit LSB executable, x86-64"
+        MACHINE_PATTERN="Machine:.*Advanced Micro Devices X86-64"
+        QEMU_BIN="qemu-x86_64-static"
+        ;;
+    x86)
+        ELF_PATTERN="ELF 32-bit LSB executable, Intel"
+        MACHINE_PATTERN="Machine:.*Intel 80386"
+        QEMU_BIN="qemu-i386-static"
+        ;;
     *)
-        echo "ERROR: unsupported arch: $ARCH (expected: arm64)"
+        echo "ERROR: unsupported arch: $ARCH (expected: arm64, arm, x86_64, x86)"
         exit 1
         ;;
 esac
@@ -107,36 +122,47 @@ else
     fail "binary does not contain 'strace' string"
 fi
 
-# 9–10. QEMU smoke tests
+# 9–11. Smoke tests (native execution or QEMU)
 QEMU_TIMEOUT=5
-if command -v "$QEMU_BIN" >/dev/null 2>&1; then
-    QEMU="$QEMU_BIN"
+HOST_ARCH="$(uname -m)"
+CAN_RUN=false
+RUN_CMD=""
+
+if { [[ "$ARCH" == "x86_64" ]] && [[ "$HOST_ARCH" == "x86_64" ]]; } ||
+   { [[ "$ARCH" == "x86" ]] && [[ "$HOST_ARCH" == "x86_64" ]]; }; then
+    CAN_RUN=true
+elif command -v "$QEMU_BIN" >/dev/null 2>&1; then
+    CAN_RUN=true
+    RUN_CMD="$QEMU_BIN"
+else
+    echo "SKIP: smoke tests ($QEMU_BIN not installed)"
+fi
+
+if [[ "$CAN_RUN" == true ]]; then
 
     # 9. -V prints version string
-    QEMU_VER="$(timeout -k 3 "$QEMU_TIMEOUT" "$QEMU" "$BINARY" -V 2>&1 || true)"
+    QEMU_VER="$(timeout -k 3 "$QEMU_TIMEOUT" $RUN_CMD "$BINARY" -V 2>&1 || true)"
     if echo "$QEMU_VER" | grep -qE "strace -- version [0-9]+\.[0-9]+"; then
-        pass "QEMU -V: $QEMU_VER"
+        pass "smoke -V: $QEMU_VER"
     else
-        fail "QEMU -V — output: $QEMU_VER"
+        fail "smoke -V — output: $QEMU_VER"
     fi
 
     # 10. -h prints help/usage text
-    QEMU_HELP="$(timeout -k 3 "$QEMU_TIMEOUT" "$QEMU" "$BINARY" -h 2>&1 || true)"
+    QEMU_HELP="$(timeout -k 3 "$QEMU_TIMEOUT" $RUN_CMD "$BINARY" -h 2>&1 || true)"
     if echo "$QEMU_HELP" | grep -q "Usage: strace"; then
-        pass "QEMU -h shows usage text"
+        pass "smoke -h shows usage text"
     else
-        fail "QEMU -h — output: $(echo "$QEMU_HELP" | head -3)"
+        fail "smoke -h — output: $(echo "$QEMU_HELP" | head -3)"
     fi
 
     # 11. Error on nonexistent program
-    QEMU_ERR="$(timeout -k 3 "$QEMU_TIMEOUT" "$QEMU" "$BINARY" /nonexistent/program 2>&1 || true)"
+    QEMU_ERR="$(timeout -k 3 "$QEMU_TIMEOUT" $RUN_CMD "$BINARY" /nonexistent/program 2>&1 || true)"
     if echo "$QEMU_ERR" | grep -q "No such file or directory"; then
-        pass "QEMU reports error for nonexistent program"
+        pass "smoke reports error for nonexistent program"
     else
-        fail "QEMU nonexistent program — output: $(echo "$QEMU_ERR" | head -3)"
+        fail "smoke nonexistent program — output: $(echo "$QEMU_ERR" | head -3)"
     fi
-else
-    echo "SKIP: QEMU smoke tests ($QEMU_BIN not installed)"
 fi
 
 echo ""

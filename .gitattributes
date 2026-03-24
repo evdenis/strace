@@ -8,12 +8,18 @@
 *.toml text eol=lf
 META-INF/** text eol=lf
 
+strace-bin/** binary
+
 .gitattributes export-ignore
 .gitignore export-ignore
 .dockerignore export-ignore
 CHECKLIST.md export-ignore
+CHANGELOG.md export-ignore
 CLAUDE.md export-ignore
 Dockerfile export-ignore
+LICENSE export-ignore
+Makefile export-ignore
+README.md export-ignore
 build-strace.sh export-ignore
 cliff.toml export-ignore
 hooks/ export-ignore

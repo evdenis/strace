@@ -1,5 +1,6 @@
 /*.zip
 /out/
+/system/bin/strace
 CLAUDE.md
 CHECKLIST.md
 .claude/

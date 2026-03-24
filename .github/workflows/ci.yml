@@ -40,7 +40,11 @@ jobs:
       - name: Verify expected files are present
         run: |
           ZIP=$(ls strace-v*.zip)
-          for f in module.prop customize.sh system/bin/strace \
+          for f in module.prop customize.sh \
+                   strace-bin/arm64/strace \
+                   strace-bin/arm/strace \
+                   strace-bin/x86_64/strace \
+                   strace-bin/x86/strace \
                    META-INF/com/google/android/update-binary \
                    META-INF/com/google/android/updater-script; do
             unzip -l "$ZIP" | grep -q "$f" || { echo "MISSING: $f"; exit 1; }
