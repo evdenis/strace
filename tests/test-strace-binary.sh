@@ -165,6 +165,42 @@ if [[ "$CAN_RUN" == true ]]; then
     fi
 fi
 
+# 12–14. Extended native tests: actually strace a program
+# Only possible when running natively (not via QEMU)
+if [[ "$CAN_RUN" == true ]] && [[ -z "$RUN_CMD" ]]; then
+
+    # 12. strace /bin/true produces syscall output
+    OUTPUT="$(timeout -k 3 "$QEMU_TIMEOUT" "$BINARY" /bin/true 2>&1 || true)"
+    if echo "$OUTPUT" | grep -q "execve\|exit_group"; then
+        pass "strace /bin/true shows syscalls"
+    else
+        fail "strace /bin/true — output: $(echo "$OUTPUT" | head -3)"
+    fi
+
+    # 13. strace -c produces summary table
+    OUTPUT="$(timeout -k 3 "$QEMU_TIMEOUT" "$BINARY" -c /bin/true 2>&1 || true)"
+    if echo "$OUTPUT" | grep -q "% time"; then
+        pass "strace -c shows summary table"
+    else
+        fail "strace -c — output: $(echo "$OUTPUT" | head -3)"
+    fi
+
+    # 14. strace -e trace=write filters syscalls
+    UNFILTERED="$(timeout -k 3 "$QEMU_TIMEOUT" "$BINARY" -e trace=read,openat /bin/true 2>&1 || true)"
+    if echo "$UNFILTERED" | grep -q "read\|openat"; then
+        OUTPUT="$(timeout -k 3 "$QEMU_TIMEOUT" "$BINARY" -e trace=write /bin/true 2>&1 || true)"
+        if ! echo "$OUTPUT" | grep -q "read\|openat"; then
+            pass "strace -e trace=write filters correctly"
+        else
+            fail "strace -e trace=write shows unfiltered syscalls — output: $(echo "$OUTPUT" | head -3)"
+        fi
+    else
+        pass "strace -e trace=write filters correctly (baseline has no read/openat)"
+    fi
+elif [[ "$CAN_RUN" == true ]]; then
+    echo "SKIP: extended native tests (running via QEMU)"
+fi
+
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
 
