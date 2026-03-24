@@ -8,7 +8,6 @@
 FROM ubuntu:22.04 AS builder
 
 ARG STRACE_VERSION=6.19
-ARG TARGET_ARCH=arm64
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -28,7 +27,8 @@ WORKDIR /build
 RUN curl -fsSL "https://github.com/strace/strace/releases/download/v${STRACE_VERSION}/strace-${STRACE_VERSION}.tar.xz" \
     | tar xJ
 
-COPY build-strace.sh /build-strace.sh
+COPY scripts/build-strace.sh /build-strace.sh
+ARG TARGET_ARCH=arm64
 RUN bash /build-strace.sh "$STRACE_VERSION" "$TARGET_ARCH"
 
 # ── Stage 2: Extract binary ──

@@ -7,6 +7,11 @@ if command -v shellcheck >/dev/null 2>&1; then
         echo "Running ShellCheck on $f..."
         shellcheck "$f" || STATUS=1
     done
+    for f in scripts/*.sh; do
+        [ -f "$f" ] || continue
+        echo "Running ShellCheck on $f..."
+        shellcheck "$f" || STATUS=1
+    done
     for f in tests/*.sh; do
         [ -f "$f" ] || continue
         echo "Running ShellCheck on $f..."

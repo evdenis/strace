@@ -12,7 +12,7 @@ all: $(ZIP)
 zip: $(ZIP)
 
 %.zip: clean
-	zip -r9 $(ZIP) . -x $(MODNAME)-*.zip LICENSE CLAUDE.md README.md CHANGELOG.md CHECKLIST.md cliff.toml .gitignore .gitattributes .dockerignore Makefile Dockerfile build-strace.sh /hooks/* /tests/* /out/* /.git* /.claude*
+	zip -r9 $(ZIP) . -x $(MODNAME)-*.zip LICENSE CLAUDE.md README.md CHANGELOG.md CHECKLIST.md cliff.toml .gitignore .gitattributes .dockerignore Makefile Dockerfile /hooks/* /scripts/* /tests/* /out/* /.git* /.claude*
 
 install: $(ZIP)
 	adb push $(ZIP) /sdcard/

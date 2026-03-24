@@ -20,8 +20,8 @@ Dockerfile export-ignore
 LICENSE export-ignore
 Makefile export-ignore
 README.md export-ignore
-build-strace.sh export-ignore
 cliff.toml export-ignore
 hooks/ export-ignore
+scripts/ export-ignore
 tests/ export-ignore
 .claude/ export-ignore

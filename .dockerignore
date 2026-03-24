@@ -6,6 +6,8 @@ out/
 out-*/
 tests/
 hooks/
+scripts/
+!scripts/build-strace.sh
 system/
 strace-bin/
 LICENSE

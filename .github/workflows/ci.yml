@@ -22,6 +22,10 @@ jobs:
             [ -f "$f" ] || continue
             shellcheck "$f" || STATUS=1
           done
+          for f in scripts/*.sh; do
+            [ -f "$f" ] || continue
+            shellcheck "$f" || STATUS=1
+          done
           for f in tests/*.sh; do
             [ -f "$f" ] || continue
             shellcheck "$f" || STATUS=1
@@ -55,8 +59,8 @@ jobs:
         run: |
           ZIP=$(ls strace-v*.zip)
           for f in .gitignore .dockerignore CLAUDE.md .claude/ .git/ .github/ \
-                   Makefile Dockerfile build-strace.sh LICENSE README.md \
-                   CHANGELOG.md CHECKLIST.md cliff.toml hooks/ tests/ out/; do
+                   Makefile Dockerfile LICENSE README.md \
+                   CHANGELOG.md CHECKLIST.md cliff.toml hooks/ scripts/ tests/ out/; do
             if unzip -l "$ZIP" | grep -q "$f"; then
               echo "UNEXPECTED: $f found in zip"
               exit 1

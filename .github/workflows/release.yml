@@ -50,7 +50,7 @@ jobs:
         run: |
           LISTING=$(unzip -l *.zip)
           echo "$LISTING"
-          echo "$LISTING" | grep -qE '\.git/|\.claude/|Makefile|README\.md|CHANGELOG\.md|CHECKLIST\.md|CLAUDE\.md|LICENSE|cliff\.toml|\.gitignore|\.gitattributes|\.dockerignore|hooks/|Dockerfile|build-strace\.sh|tests/|out/' \
+          echo "$LISTING" | grep -qE '\.git/|\.claude/|Makefile|README\.md|CHANGELOG\.md|CHECKLIST\.md|CLAUDE\.md|LICENSE|cliff\.toml|\.gitignore|\.gitattributes|\.dockerignore|hooks/|scripts/|Dockerfile|tests/|out/' \
             && { echo "::error::Dev files found in zip"; exit 1; } || true
           for f in strace-bin/arm64/strace strace-bin/arm/strace \
                    strace-bin/x86_64/strace strace-bin/x86/strace; do
