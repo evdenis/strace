@@ -7,7 +7,7 @@
 # ── Stage 1: Builder ──
 FROM ubuntu:22.04 AS builder
 
-ARG STRACE_VERSION=7.0
+ARG STRACE_VERSION=7.1
 
 ENV DEBIAN_FRONTEND=noninteractive
 

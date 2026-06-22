@@ -11,7 +11,7 @@
 
 set -eo pipefail
 
-STRACE_VERSION="${1:-7.0}"
+STRACE_VERSION="${1:-7.1}"
 ARCH="${2:-arm64}"
 
 case "$ARCH" in

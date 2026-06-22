@@ -1,7 +1,7 @@
 id=strace
 name=Strace
-version=v2.1
-versionCode=4
+version=v2.2
+versionCode=5
 author=Denis Efremov (@evdenis)
-description=Strace v7.0 for ARM64, ARM, x86_64, and x86.
+description=Strace v7.1 for ARM64, ARM, x86_64, and x86.
 updateJson=https://github.com/evdenis/strace/releases/latest/download/update.json
